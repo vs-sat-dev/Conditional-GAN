@@ -14,7 +14,7 @@ LEARNING_RATE = 3e-4
 NOISE_DIM = 100
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 EPOCHS = 10
-IMG_SIZE = 32
+IMG_SIZE = 64
 NUM_CLASSES = 10
 
 transform = transforms.Compose([
