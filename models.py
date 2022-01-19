@@ -24,20 +24,20 @@ class Discriminator(nn.Module):
     def __init__(self, num_classes=10, img_size=28):
         super(Discriminator, self).__init__()
         self.pipe = nn.Sequential(
-            # 32*32*256
-            conv_block(in_channels=1+1, out_channels=256, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1)),
+            # 32*32*64
+            conv_block(in_channels=1+1, out_channels=64, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1)),
 
-            # 16*16*512
+            # 16*16*128
+            conv_block(in_channels=64, out_channels=128, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1)),
+
+            # 8*8*256
+            conv_block(in_channels=128, out_channels=256, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1)),
+
+            # 4*4*512
             conv_block(in_channels=256, out_channels=512, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1)),
 
-            # 8*8*1024
-            conv_block(in_channels=512, out_channels=1024, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1)),
-
-            # 4*4*2048
-            conv_block(in_channels=1024, out_channels=2048, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1)),
-
             # 1*1
-            nn.Conv2d(in_channels=2048, out_channels=1, kernel_size=(4, 4), stride=(1, 1), padding=(0, 0)),
+            nn.Conv2d(in_channels=512, out_channels=1, kernel_size=(4, 4), stride=(1, 1), padding=(0, 0)),
             nn.Sigmoid()
         )
         self.embed = nn.Embedding(num_classes, img_size * img_size)
@@ -53,20 +53,20 @@ class Generator(nn.Module):
     def __init__(self, noise_dim, num_classes=10):
         super(Generator, self).__init__()
         self.pipe = nn.Sequential(
-            # 4*4*2048
-            deconv_block(in_channels=noise_dim * 2, out_channels=2048, kernel_size=(4, 4),
+            # 4*4*1024
+            deconv_block(in_channels=noise_dim * 2, out_channels=512, kernel_size=(4, 4),
                          stride=(1, 1), padding=(0, 0)),
-            # 8*8*1024
-            deconv_block(in_channels=2048, out_channels=1024, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1)),
-
-            # 16*16*512
-            deconv_block(in_channels=1024, out_channels=512, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1)),
-
-            # 32*32*256
+            # 8*8*256
             deconv_block(in_channels=512, out_channels=256, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1)),
 
+            # 16*16*128
+            deconv_block(in_channels=256, out_channels=128, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1)),
+
+            # 32*32*64
+            deconv_block(in_channels=128, out_channels=64, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1)),
+
             # 64*64
-            nn.ConvTranspose2d(in_channels=256, out_channels=1, kernel_size=(4, 4),
+            nn.ConvTranspose2d(in_channels=64, out_channels=1, kernel_size=(4, 4),
                                stride=(2, 2), padding=(1, 1), bias=False),
             nn.Tanh()
         )

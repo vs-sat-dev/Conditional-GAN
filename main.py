@@ -9,8 +9,8 @@ import torchvision.datasets as datasets
 from models import Discriminator, Generator
 
 
-BATCH_SIZE = 32
-LEARNING_RATE = 3e-4
+BATCH_SIZE = 128
+LEARNING_RATE = 1e-5
 NOISE_DIM = 100
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 EPOCHS = 10
@@ -19,7 +19,8 @@ NUM_CLASSES = 10
 
 transform = transforms.Compose([
     transforms.Resize(IMG_SIZE),
-    transforms.ToTensor()
+    transforms.ToTensor(),
+    transforms.Normalize([0.5], [0.5])
 ])
 
 if __name__ == '__main__':
@@ -30,8 +31,8 @@ if __name__ == '__main__':
     model_gen = Generator(NOISE_DIM, NUM_CLASSES).to(DEVICE)
     model_disc = Discriminator(NUM_CLASSES, IMG_SIZE).to(DEVICE)
 
-    optim_gen = optim.Adam(params=model_gen.parameters(), lr=LEARNING_RATE)
-    optim_disc = optim.Adam(params=model_disc.parameters(), lr=LEARNING_RATE*0.25)
+    optim_gen = optim.Adam(params=model_gen.parameters(), lr=LEARNING_RATE, betas=(0.5, 0.999))
+    optim_disc = optim.Adam(params=model_disc.parameters(), lr=LEARNING_RATE * 0.25, betas=(0.5, 0.999))
     criterion = torch.nn.BCELoss()
 
     writer_real = SummaryWriter('../logs/real')
@@ -65,8 +66,8 @@ if __name__ == '__main__':
 
             print(f'gen_loss: {gen_loss} disc_loss: {disc_loss} epoch: {epoch}')
 
-            real_grid = torchvision.utils.make_grid(real_images)
-            fake_grid = torchvision.utils.make_grid(fake_images)
+            real_grid = torchvision.utils.make_grid(real_images[:32])
+            fake_grid = torchvision.utils.make_grid(fake_images[:32])
 
             writer_real.add_image('Real', real_grid, global_step=step)
             writer_fake.add_image('Fake', fake_grid, global_step=step)
