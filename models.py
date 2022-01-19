@@ -6,7 +6,7 @@ def conv_block(in_channels, out_channels, kernel_size, stride, padding):
     return nn.Sequential(
         nn.Conv2d(in_channels=in_channels, out_channels=out_channels, kernel_size=kernel_size,
                   stride=stride, padding=padding, bias=False),
-        #nn.BatchNorm2d(out_channels),
+        nn.BatchNorm2d(out_channels),
         nn.LeakyReLU(0.2)
     )
 
@@ -15,7 +15,7 @@ def deconv_block(in_channels, out_channels, kernel_size, stride, padding):
     return nn.Sequential(
         nn.ConvTranspose2d(in_channels=in_channels, out_channels=out_channels, kernel_size=kernel_size,
                            stride=stride, padding=padding, bias=False),
-        #nn.BatchNorm2d(out_channels),
+        nn.BatchNorm2d(out_channels),
         nn.ReLU()
     )
 
@@ -24,9 +24,9 @@ class Discriminator(nn.Module):
     def __init__(self, num_classes=10, img_size=28):
         super(Discriminator, self).__init__()
         self.pipe = nn.Sequential(
-            conv_block(in_channels=1+1, out_channels=512, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1)), # 14*14*512
-            conv_block(in_channels=512, out_channels=1024, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1)),  # 7*7*1024
-            conv_block(in_channels=1024, out_channels=2048, kernel_size=(4, 4), stride=(1, 1), padding=(0, 0)),  # 4*4*2048
+            conv_block(in_channels=1+1, out_channels=512, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1)), # 16*16*512
+            conv_block(in_channels=512, out_channels=1024, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1)),  # 8*8*1024
+            conv_block(in_channels=1024, out_channels=2048, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1)),  # 4*4*2048
             nn.Conv2d(in_channels=2048, out_channels=1, kernel_size=(4, 4), stride=(1, 1), padding=(0, 0)), # 1*1
             nn.Sigmoid()
         )
@@ -45,8 +45,8 @@ class Generator(nn.Module):
         self.pipe = nn.Sequential(
             deconv_block(in_channels=noise_dim * 2, out_channels=2048, kernel_size=(4, 4),
                          stride=(1, 1), padding=(0, 0)), #4*4*2048
-            deconv_block(in_channels=2048, out_channels=1024, kernel_size=(4, 4), stride=(1, 1), padding=(0, 0)), #7*7*1024
-            deconv_block(in_channels=1024, out_channels=512, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1)), #14*14*512
+            deconv_block(in_channels=2048, out_channels=1024, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1)), #8*8*1024
+            deconv_block(in_channels=1024, out_channels=512, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1)), #16*16*512
             nn.ConvTranspose2d(in_channels=512, out_channels=1, kernel_size=(4, 4),
                                stride=(2, 2), padding=(1, 1), bias=False),
             nn.Tanh()
@@ -55,8 +55,6 @@ class Generator(nn.Module):
 
     def forward(self, x, labels):
         embedding = self.embed(labels).unsqueeze(2).unsqueeze(3)
-        #print(f'x : {x.shape}')
-        #print(f'embedding : {embedding.shape}')
         x = torch.cat([x, embedding], dim=1)
         return self.pipe(x)
 

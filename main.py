@@ -9,23 +9,26 @@ import torchvision.datasets as datasets
 from models import Discriminator, Generator
 
 
-transform = transforms.Compose([
-    transforms.ToTensor()
-])
-
 BATCH_SIZE = 32
 LEARNING_RATE = 3e-4
 NOISE_DIM = 100
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 EPOCHS = 10
+IMG_SIZE = 32
+NUM_CLASSES = 10
+
+transform = transforms.Compose([
+    transforms.Resize(IMG_SIZE),
+    transforms.ToTensor()
+])
 
 if __name__ == '__main__':
 
     dataset_train = datasets.MNIST(root='data', train=True, download=True, transform=transform)
     loader_train = DataLoader(dataset=dataset_train, batch_size=BATCH_SIZE, shuffle=True, num_workers=2)
 
-    model_gen = Generator(NOISE_DIM).to(DEVICE)
-    model_disc = Discriminator().to(DEVICE)
+    model_gen = Generator(NOISE_DIM, NUM_CLASSES).to(DEVICE)
+    model_disc = Discriminator(NUM_CLASSES, IMG_SIZE).to(DEVICE)
 
     optim_gen = optim.Adam(params=model_gen.parameters(), lr=LEARNING_RATE)
     optim_disc = optim.Adam(params=model_disc.parameters(), lr=LEARNING_RATE)
