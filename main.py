@@ -31,7 +31,7 @@ if __name__ == '__main__':
     model_disc = Discriminator(NUM_CLASSES, IMG_SIZE).to(DEVICE)
 
     optim_gen = optim.Adam(params=model_gen.parameters(), lr=LEARNING_RATE)
-    optim_disc = optim.Adam(params=model_disc.parameters(), lr=LEARNING_RATE)
+    optim_disc = optim.Adam(params=model_disc.parameters(), lr=LEARNING_RATE*0.25)
     criterion = torch.nn.BCELoss()
 
     writer_real = SummaryWriter('../logs/real')
@@ -48,9 +48,6 @@ if __name__ == '__main__':
 
             disc_real = model_disc(real_images, labels).reshape(-1)
             disc_fake = model_disc(fake_images, labels).reshape(-1)
-
-            #print(f'real: {disc_real}')
-            #print(f'fake: {disc_fake}')
 
             disc_real_loss = criterion(disc_real, torch.ones_like(disc_real))
             disc_fake_loss = criterion(disc_fake, torch.zeros_like(disc_fake))
