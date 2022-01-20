@@ -9,13 +9,14 @@ import torchvision.datasets as datasets
 from models import Discriminator, Generator
 
 
-BATCH_SIZE = 128
+BATCH_SIZE = 32
 LEARNING_RATE = 1e-5
 NOISE_DIM = 100
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 EPOCHS = 10
 IMG_SIZE = 64
 NUM_CLASSES = 10
+DISC_ITERATIONS = 5
 
 transform = transforms.Compose([
     transforms.Resize(IMG_SIZE),
@@ -47,16 +48,17 @@ if __name__ == '__main__':
             real_images = data.to(DEVICE)
             fake_images = model_gen(torch.randn(real_images.shape[0], NOISE_DIM, 1, 1).to(DEVICE), labels)
 
-            disc_real = model_disc(real_images, labels).reshape(-1)
-            disc_fake = model_disc(fake_images, labels).reshape(-1)
+            for _ in range(DISC_ITERATIONS):
+                disc_real = model_disc(real_images, labels).reshape(-1)
+                disc_fake = model_disc(fake_images, labels).reshape(-1)
 
-            disc_real_loss = criterion(disc_real, torch.ones_like(disc_real))
-            disc_fake_loss = criterion(disc_fake, torch.zeros_like(disc_fake))
-            disc_loss = (disc_real_loss + disc_fake_loss) / 2
+                disc_real_loss = criterion(disc_real, torch.ones_like(disc_real))
+                disc_fake_loss = criterion(disc_fake, torch.zeros_like(disc_fake))
+                disc_loss = (disc_real_loss + disc_fake_loss) / 2
 
-            optim_disc.zero_grad()
-            disc_loss.backward(retain_graph=True)
-            optim_disc.step()
+                optim_disc.zero_grad()
+                disc_loss.backward(retain_graph=True)
+                optim_disc.step()
 
             gen_fake = model_disc(fake_images, labels).reshape(-1)
             gen_loss = criterion(gen_fake, torch.ones_like(gen_fake))
