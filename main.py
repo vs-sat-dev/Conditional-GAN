@@ -32,7 +32,7 @@ if __name__ == '__main__':
     model_disc = Discriminator(NUM_CLASSES, IMG_SIZE).to(DEVICE)
 
     optim_gen = optim.Adam(params=model_gen.parameters(), lr=LEARNING_RATE, betas=(0.5, 0.999))
-    optim_disc = optim.Adam(params=model_disc.parameters(), lr=LEARNING_RATE * 0.25, betas=(0.5, 0.999))
+    optim_disc = optim.Adam(params=model_disc.parameters(), lr=LEARNING_RATE, betas=(0.5, 0.999))
     criterion = torch.nn.BCELoss()
 
     writer_real = SummaryWriter('../logs/real')
@@ -42,7 +42,7 @@ if __name__ == '__main__':
 
     for epoch in range(EPOCHS):
         print(f'epoch: {epoch + 1}')
-        for data, labels in loader_train:
+        for batch_id, (data, labels) in enumerate(loader_train):
             labels = labels.to(DEVICE)
             real_images = data.to(DEVICE)
             fake_images = model_gen(torch.randn(real_images.shape[0], NOISE_DIM, 1, 1).to(DEVICE), labels)
@@ -66,11 +66,13 @@ if __name__ == '__main__':
 
             print(f'gen_loss: {gen_loss} disc_loss: {disc_loss} epoch: {epoch}')
 
-            real_grid = torchvision.utils.make_grid(real_images[:32])
-            fake_grid = torchvision.utils.make_grid(fake_images[:32])
+            if batch_id % 10 == 0:
+                with torch.no_grad():
+                    real_grid = torchvision.utils.make_grid(real_images[:32])
+                    fake_grid = torchvision.utils.make_grid(fake_images[:32])
 
-            writer_real.add_image('Real', real_grid, global_step=step)
-            writer_fake.add_image('Fake', fake_grid, global_step=step)
+                    writer_real.add_image('Real', real_grid, global_step=step)
+                    writer_fake.add_image('Fake', fake_grid, global_step=step)
 
-            step += 1
+                    step += 1
 
