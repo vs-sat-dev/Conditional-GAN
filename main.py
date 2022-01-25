@@ -9,7 +9,7 @@ import torchvision.datasets as datasets
 from models import Discriminator, Generator, initialize_weights
 
 
-BATCH_SIZE = 32
+BATCH_SIZE = 64
 LEARNING_RATE = 1e-4
 NOISE_DIM = 100
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -60,6 +60,8 @@ if __name__ == '__main__':
     optim_disc = optim.Adam(params=model_disc.parameters(), lr=LEARNING_RATE, betas=(0.0, 0.9))
     #criterion = torch.nn.BCELoss()
 
+    fixed_noise = torch.randn(32, NOISE_DIM, 1, 1).to(DEVICE)
+
     writer_real = SummaryWriter('../logs/real')
     writer_fake = SummaryWriter('../logs/fake')
 
@@ -97,8 +99,10 @@ if __name__ == '__main__':
 
             if batch_id % 10 == 0:
                 with torch.no_grad():
+                    fake_images_test = model_gen(fixed_noise, labels[:32])
+
                     real_grid = torchvision.utils.make_grid(real_images[:32])
-                    fake_grid = torchvision.utils.make_grid(fake_images[:32])
+                    fake_grid = torchvision.utils.make_grid(fake_images_test[:32])
 
                     writer_real.add_image('Real', real_grid, global_step=step)
                     writer_fake.add_image('Fake', fake_grid, global_step=step)
