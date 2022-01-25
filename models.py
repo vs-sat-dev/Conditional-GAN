@@ -53,20 +53,20 @@ class Generator(nn.Module):
     def __init__(self, noise_dim, num_classes=10):
         super(Generator, self).__init__()
         self.pipe = nn.Sequential(
-            # 4*4*1024
-            deconv_block(in_channels=noise_dim * 2, out_channels=1024, kernel_size=(4, 4),
+            # 4*4*512
+            deconv_block(in_channels=noise_dim * 2, out_channels=512, kernel_size=(4, 4),
                          stride=(1, 1), padding=(0, 0)),
-            # 8*8*512
-            deconv_block(in_channels=1024, out_channels=512, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1)),
-
-            # 16*16*256
+            # 8*8*256
             deconv_block(in_channels=512, out_channels=256, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1)),
 
-            # 32*32*128
+            # 16*16*128
             deconv_block(in_channels=256, out_channels=128, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1)),
 
+            # 32*32*64
+            deconv_block(in_channels=128, out_channels=64, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1)),
+
             # 64*64
-            nn.ConvTranspose2d(in_channels=128, out_channels=1, kernel_size=(4, 4),
+            nn.ConvTranspose2d(in_channels=64, out_channels=1, kernel_size=(4, 4),
                                stride=(2, 2), padding=(1, 1), bias=False),
             nn.Tanh()
         )

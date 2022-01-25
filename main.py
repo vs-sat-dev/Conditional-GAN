@@ -56,7 +56,7 @@ if __name__ == '__main__':
     initialize_weights(model_gen)
     initialize_weights(model_disc)
 
-    optim_gen = optim.Adam(params=model_gen.parameters(), lr=LEARNING_RATE, betas=(0.0, 0.9))
+    optim_gen = optim.Adam(params=model_gen.parameters(), lr=LEARNING_RATE * 10.0, betas=(0.0, 0.9))
     optim_disc = optim.Adam(params=model_disc.parameters(), lr=LEARNING_RATE, betas=(0.0, 0.9))
     #criterion = torch.nn.BCELoss()
 
