@@ -82,16 +82,3 @@ def initialize_weights(model):
     for m in model.modules():
         if isinstance(m, (nn.Conv2d, nn.ConvTranspose2d, nn.BatchNorm2d, nn.InstanceNorm2d)):
             nn.init.normal_(m.weight.data, 0.0, 0.01)
-
-
-"""
-if __name__ == '__main__':
-    val_disc = torch.randn(2, 1, 28, 28)
-    model_disc = Discriminator()
-    print(f'disc: {model_disc(val_disc).shape}')
-
-    noise_dim = 100
-    val_gen = torch.randn(2, noise_dim, 1, 1)
-    model_gen = Generator(noise_dim)
-    print(f'gen: {model_gen(val_gen).shape}')
-"""
