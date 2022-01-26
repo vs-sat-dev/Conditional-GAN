@@ -7,9 +7,11 @@ I spent a lot of time understanding the way of correct GAN training. It's quite 
 The result that I got after 10 epochs with my better approach looks like the following.
 
 These real images
+
 ![](readme_images/real.png)
 
 These images were generated with the GAN model
+
 ![](readme_images/real.png)
 
 Than I train two ResNet classifier models, one with real MNIST images and second with images from GAN model. I got the following f1 and accuracy scores.
