@@ -28,3 +28,5 @@ GAN dataset
 accuracy_score: 0.8913
 f1_score: 0.8894752379667791
 ```
+
+I didn't check the results what classes got worse scores but I suspect that it was 1 and 7.
