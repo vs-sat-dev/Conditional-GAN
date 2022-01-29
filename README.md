@@ -14,7 +14,7 @@ These images were generated with the GAN model
 
 ![](readme_images/fake.png)
 
-Than I train two ResNet classifier models, one with real MNIST images and second with images from GAN model. I got the following f1 and accuracy scores.
+Then I train two ResNet classifier models, one with real MNIST images and second with images from GAN model. I got the following f1 and accuracy scores.
 
 
 MNIST dataset
